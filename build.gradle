@@ -1,0 +1,52 @@
+plugins {
+    id 'io.papermc.paperweight.userdev' version '1.7.3-SNAPSHOT'
+    id 'java'
+}
+
+group = 'ru.starfarm'
+version = project.plugin_version
+
+repositories {
+    mavenCentral()
+    maven { url 'https://jitpack.io/' }
+    maven { url 'https://repo.papermc.io/repository/maven-public/' }
+    maven { url 'https://repo.codemc.io/repository/maven-releases/' }
+    var starFarmRepositories = ['releases', 'private', 'snapshots']
+    starFarmRepositories.each { repo ->
+        maven {
+            url "https://repo.starfarm.fun/$repo"
+            credentials {
+                username System.getenv('SF_REPO_USER')
+                password System.getenv('SF_REPO_PASSWORD')
+            }
+        }
+    }
+}
+
+dependencies {
+    compileOnly "ru.starfarm:kefir-core:${project.core_version}"
+    compileOnly "com.github.retrooper:packetevents-spigot:${project.packet_events_version}"
+
+    paperweight.paperDevBundle(project.paper_version)
+
+    annotationProcessor compileOnly("org.projectlombok:lombok:${project.lombok_version}")
+
+}
+
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+}
+
+tasks.processResources {
+    filesMatching("**/paper-plugin.yml") {
+        expand(version: project.version)
+        expand(mc_version: project.mc_version)
+    }
+}
+
+jar {
+    from configurations.runtimeClasspath.collect(project.&zipTree)
+    duplicatesStrategy DuplicatesStrategy.EXCLUDE
+}
+
+tasks.withType(JavaCompile)*.options*.encoding = 'UTF-8'

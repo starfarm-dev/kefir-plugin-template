@@ -1,0 +1,26 @@
+name: YourPlugin
+description: Template kefir-core plugin
+version: ${version}
+author: YourName
+
+main: ru.starfarm.template.TemplatePlugin
+
+api-version: ${mc-version}
+
+dependencies:
+  server:
+    BukkitCore: # Для подключения API к вашему плагину
+      load: BEFORE
+      required: true
+      join-classpath: true
+
+    packetevents: # Для использования библиотеки пактов, не обязательно
+      load: BEFORE
+      required: true
+      join-classpath: true
+
+  bootstrap: # Для использования API в Paper Bootstrap, не обязательно
+    BukkitCore:
+      load: BEFORE
+      required: true
+      join-classpath: true
